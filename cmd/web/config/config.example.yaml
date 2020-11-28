@@ -1,0 +1,8 @@
+port: 5000
+env: "dev"
+database:
+  host:     "localhost"
+  port:     5431
+  user:     "user"
+  password: "user-password"
+  name:     "db-name"

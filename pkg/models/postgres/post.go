@@ -1,14 +1,14 @@
-package models
+package postgres
 
 import (
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres"
+	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
 	"gorm.io/gorm"
 )
 
 type Post struct {
 	gorm.Model
 	UserID int
-	User   postgres.User
+	User   user.User
 	Text   string `gorm:"not null"`
 	Name   string
 	Avatar string

@@ -1,0 +1,71 @@
+version: "3.4"
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_HOST: "user"
+      POSTGRES_PASSWORD: "embrace123"
+      POSTGRES_DB: "devconnect-dev"
+    ports:
+      - "5431:5432"
+    volumes:
+      - ${HOME}/user-data:/var/lib/postgresql/data
+    networks:
+      - devconnect-go-v2
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    ports:
+      - "5430:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@domain.local
+      PGADMIN_DEFAULT_PASSWORD: "embrace123"
+    depends_on:
+      - postgres
+    networks:
+      - devconnect-go-v2
+    restart: unless-stopped
+
+  api:
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      target: dev
+    environment:
+      NODE_ENV: development
+    ports:
+      - 5000:5000
+    networks:
+      - devconnect-go-v2
+    volumes:
+      - .:/app
+    command: CompileDaemon --build="go build -o main ./cmd/web" --command=./main
+
+  debug-api:
+    depends_on:
+      - postgres
+    build:
+      context: ./
+      target: dev
+    container_name: debug-api
+    environment:
+      NODE_ENV: development
+      ADDR_PORT: 8888
+      CGO_ENABLED: 0
+    ports:
+      - 5000:5000
+      - 2345:2345
+    networks:
+      - devconnect-go-v2
+    volumes:
+      - .:/app
+    security_opt:
+      - "seccomp:unconfined"
+    tty: true
+    stdin_open: true
+    command: dlv debug --headless --listen=:2345 --api-version=2 --log --accept-multiclient ./cmd/web/main.go
+
+networks:
+  devconnect-go-v2:
