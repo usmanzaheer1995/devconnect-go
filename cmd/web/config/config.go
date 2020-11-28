@@ -12,7 +12,7 @@ type Config struct {
 	Port     string         `yaml:"port"`
 	Env      string         `yaml:"env"`
 	Secret   string         `yaml:"secret"`
-	Database PostgresConfig `yaml:"database"`
+	Database PostgresConfig `yaml:"postgres"` // Change this in case of different db
 }
 
 // DefaultConfig provides default config in development environment
