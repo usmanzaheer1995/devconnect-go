@@ -69,3 +69,4 @@ tmp/
 .vscode
 vendor/*/
 **/config.yaml
+*.exe
