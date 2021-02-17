@@ -23,11 +23,11 @@ func main() {
 	services, err := postgres.NewServices(
 		postgres.WithGorm(cfg.Database.ConnectionInfo()),
 		postgres.WithUser(),
+		postgres.WithProfile(),
 	)
 	if err != nil {
 		panic(err)
 	}
-
 	r := router.NewRouter(services)
 
 	defer services.Close()

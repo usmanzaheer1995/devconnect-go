@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
 	userModel "github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
 	"io/ioutil"
@@ -18,7 +20,22 @@ type UserController struct {
 func NewUserController(u userModel.UserService) *UserController {
 	return &UserController{us: u}
 }
-func (u *UserController) Find(w http.ResponseWriter, r *http.Request) {
+
+func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) error {
+	uid := uint(r.Context().Value("userID").(float64))
+	user, err := u.us.ByID(uid)
+	if err != nil {
+		return models.NewHttpError(err, http.StatusInternalServerError, "user not found")
+	}
+	user.PasswordHash = ""
+	utils.JSON(w, http.StatusOK, &utils.Response{
+		Message: "user fetched successfully",
+		Data:    user,
+	})
+	return nil
+}
+
+func (u *UserController) Find(w http.ResponseWriter, r *http.Request) error {
 	qp := r.URL.Query()
 	var query models.Query
 	if qp.Get("offset") != "" {
@@ -37,102 +54,84 @@ func (u *UserController) Find(w http.ResponseWriter, r *http.Request) {
 	}
 	users, count, err := u.us.Find(query)
 	if err != nil {
-		utils.ERROR(w, http.StatusBadRequest, err)
-		return
-	}
-
-	resp := map[string]interface{}{
-		"users": users,
-		"total": count,
+		return fmt.Errorf("error finding users: %v", err)
 	}
 
 	utils.JSON(w, http.StatusOK, &utils.Response{
-		StatusCode: http.StatusOK,
-		Message:    "users fetched successfully",
-		Data:       resp,
+		Message: "users fetched successfully",
+		Data: map[string]interface{}{
+			"users": users,
+			"total": count,
+		},
 	})
+	return nil
 }
 
-func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
+func (u *UserController) Create(w http.ResponseWriter, r *http.Request) error {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.ERROR(w, http.StatusBadRequest, err)
-		return
+		//utils.ERROR(w, http.StatusBadRequest, err)
+		return errors.New("Error not null")
 	}
 
 	user := &userModel.User{}
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		utils.ERROR(w, http.StatusBadRequest, err)
-		return
+		//utils.ERROR(w, http.StatusBadRequest, err)
+		return errors.New("Error not null")
 	}
 
-	errs := u.us.Create(user)
-	if errs != nil {
-		var e []string
-		for _, err := range errs {
-			e = append(e, err.Error())
-		}
-		utils.JSON(w, http.StatusBadRequest, &utils.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    "bad request",
-			Data:       e,
-		})
-		return
+	err = u.us.Create(user)
+	if err != nil {
+		return models.NewHttpError(err, http.StatusBadRequest, err.Error())
 	}
 
 	token, err := utils.EncodeAuthToken(user.ID)
 	if err != nil {
-		utils.ERROR(w, http.StatusInternalServerError, err)
-		return
+		return fmt.Errorf("error encoding token: %v", err)
 	}
 
 	user.PasswordHash = ""
 	utils.JSON(w, http.StatusOK, &utils.Response{
-		StatusCode: http.StatusCreated,
-		Message:    "user created successfully",
-		Data:       map[string]interface{}{
+		Message: "user created successfully",
+		Data: map[string]interface{}{
 			"user":  user,
 			"token": token,
 		},
 	})
-	return
+	return nil
 }
 
-func (u *UserController) Login(w http.ResponseWriter, r *http.Request) {
+func (u *UserController) Login(w http.ResponseWriter, r *http.Request) error {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
-		return
+		return err
 	}
 
 	user := &userModel.User{}
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		utils.ERROR(w, http.StatusBadRequest, err)
-		return
+		return models.NewHttpError(err, http.StatusBadRequest, "bad request")
 	}
 
 	user, err = u.us.Login(user.Email, user.Password)
 	if err != nil {
-		utils.ERROR(w, http.StatusNotFound, err)
-		return
+		return err
 	}
 	token, err := utils.EncodeAuthToken(user.ID)
 	if err != nil {
-		utils.ERROR(w, http.StatusInternalServerError, err)
-		return
+		return fmt.Errorf("error encoding token: %v", err)
 	}
 
 	user.PasswordHash = ""
-	utils.JSON(w, http.StatusOK, &utils.Response{
-		StatusCode: http.StatusCreated,
-		Message:    "user created successfully",
-		Data:       map[string]interface{}{
-			"user": user,
+	utils.JSON(w, http.StatusFound, &utils.Response{
+		Message: "user logged in successfully!",
+		Data: map[string]interface{}{
+			"user":  user,
 			"token": token,
 		},
 	})
-	return
+	return nil
 }

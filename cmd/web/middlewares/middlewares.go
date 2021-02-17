@@ -39,9 +39,8 @@ func SecondMiddleware(next http.Handler) http.Handler {
 
 func AuthJwtVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		var header string
-		if (r.Header.Get("Authorization") != "") {
+		if r.Header.Get("Authorization") != "" {
 			header = r.Header.Get("Authorization")
 		} else if r.Header.Get("x-auth-token") != "" {
 			header = r.Header.Get("x-auth-token")

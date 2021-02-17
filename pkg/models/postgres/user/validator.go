@@ -2,6 +2,8 @@ package user
 
 import (
 	"errors"
+	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
+	"net/http"
 	"regexp"
 	"strings"
 	"time"
@@ -143,13 +145,13 @@ func (uv *userValidator) ByEmail(email string) (*User, error) {
 		uv.requireEmail,
 		uv.emailFormat,
 	); err != nil {
-		return nil, err
+		return nil, models.NewHttpError(err, http.StatusBadRequest, "bad request")
 	}
 	return uv.UserDB.ByEmail(u.Email)
 }
 
-func (uv *userValidator) Create(u *User) []error {
-	if err := runUserValFuncsArray(
+func (uv *userValidator) Create(u *User) error {
+	if err := runUserValFuncs(
 		u,
 		uv.normalizeEmail,
 		uv.requireEmail,
@@ -159,11 +161,10 @@ func (uv *userValidator) Create(u *User) []error {
 		uv.passwordMinLength,
 		uv.setAvatar,
 	); err != nil {
-		return err
+		return models.NewHttpError(err, http.StatusBadRequest, "")
 	}
-	var err error
-	if err = uv.bcryptPassword(u); err != nil {
-		return []error{err}
+	if err := uv.bcryptPassword(u); err != nil {
+		return models.NewHttpError(err, http.StatusBadRequest, "bad request")
 	}
 	return uv.UserDB.Create(u)
 }

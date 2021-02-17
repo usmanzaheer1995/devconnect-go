@@ -5,7 +5,6 @@ import (
 	"gorm.io/gorm"
 )
 
-/* userGorm */
 type userGorm struct {
 	db *gorm.DB
 }
@@ -29,10 +28,10 @@ func (ug *userGorm) ByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func (ug *userGorm) Create(u *User) []error {
+func (ug *userGorm) Create(u *User) error {
 	err := ug.db.Create(u).Error
 	if err != nil {
-		return []error{err}
+		return err
 	}
 	return nil
 }
@@ -73,7 +72,6 @@ func (us *userGorm) Find(query models.Query) ([]User, int64, error) {
 
 	return usersList, count, nil
 }
-/* userGorm */
 
 func countUsers(db *gorm.DB, countC chan int64, errC chan error, doneC chan int) {
 	var count int64

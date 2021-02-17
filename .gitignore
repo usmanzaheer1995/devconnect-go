@@ -70,3 +70,4 @@ tmp/
 vendor/*/
 **/config.yaml
 main
+__debug_bin

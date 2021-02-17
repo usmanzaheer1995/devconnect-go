@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/profile"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -28,6 +29,13 @@ func WithUser() ServicesConfig {
 	}
 }
 
+func WithProfile() ServicesConfig {
+	return func(s *Services) error {
+		s.Profile = profile.NewProfileService(s.db)
+		return nil
+	}
+}
+
 func NewServices(cfgs ...ServicesConfig) (*Services, error) {
 	var s Services
 	for _, cfg := range cfgs {
@@ -50,7 +58,15 @@ func (s *Services) Close() error {
 // TODO: Add this back when appropriate
 //DestructiveReset drops all tables and rebuilds them
 func (s *Services) DestructiveReset() error {
-	err := s.db.Migrator().DropTable(&user.User{})
+	err := s.db.
+		Migrator().
+		DropTable(
+			&user.User{},
+			&profile.Profile{},
+			&profile.Experience{},
+			&profile.Education{},
+			&profile.Social{},
+		)
 	if err != nil {
 		return err
 	}
@@ -61,10 +77,17 @@ func (s *Services) DestructiveReset() error {
 // AutoMigrate with attempt to automatically
 // migrate all
 func (s *Services) AutoMigrate() error {
-	return s.db.AutoMigrate(&user.User{})
+	return s.db.AutoMigrate(
+		&user.User{},
+		&profile.Profile{},
+		&profile.Education{},
+		&profile.Social{},
+		&profile.Experience{},
+	)
 }
 
 type Services struct {
-	db   *gorm.DB
-	User user.UserService
+	db      *gorm.DB
+	User    user.UserService
+	Profile profile.ProfileService
 }

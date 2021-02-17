@@ -4,21 +4,21 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/controllers"
 	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/middlewares"
+	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/profile"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
 	"net/http"
 )
 
-func authRoutes(us user.UserService) http.Handler {
+func profileRoutes(us user.UserService, ps profile.ProfileService) http.Handler {
 	r := chi.NewRouter()
 
-	uc := controllers.NewUserController(us)
+	pc := controllers.NewProfileController(us, ps)
 	r.
 		With(middlewares.AuthJwtVerify).
-		Get("/", errorHandler(uc.FindByID))
-
-	r.Post("/register", errorHandler(uc.Create))
-
-	r.Post("/login", errorHandler(uc.Login))
+		Post("/", errorHandler(pc.Create))
+	r.
+		With(middlewares.AuthJwtVerify).
+		Put("/", errorHandler(pc.Update))
 
 	return r
 }

@@ -7,9 +7,8 @@ import (
 )
 
 type Response struct {
-	StatusCode int         `json:"statusCode"`
-	Message    string      `json:"message"`
-	Data       interface{} `json:"data"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 func (res *Response) Write(p []byte) (int, error) {
@@ -28,8 +27,7 @@ func JSON(w http.ResponseWriter, statusCode int, data *Response) {
 func ERROR(w http.ResponseWriter, statusCode int, err error) {
 	if err != nil {
 		JSON(w, statusCode, &Response{
-			StatusCode: statusCode,
-			Message:    err.Error(),
+			Message: err.Error(),
 		})
 		return
 	}
