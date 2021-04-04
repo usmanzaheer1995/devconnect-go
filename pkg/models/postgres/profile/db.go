@@ -3,10 +3,11 @@ package profile
 import (
 	"errors"
 	"fmt"
+	"net/http"
+
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 type profileGorm struct {
@@ -64,6 +65,13 @@ func (pg *profileGorm) Create(p *types.ProfileRequest) error {
 		Bio:            p.Bio,
 		Githubusername: p.Githubusername,
 		UserID:         p.UserID,
+		Social: Social{
+			Youtube:   p.Social.Youtube,
+			Twitter:   p.Social.Twitter,
+			Facebook:  p.Social.Facebook,
+			Linkedin:  p.Social.Linkedin,
+			Instagram: p.Social.Instagram,
+		},
 	}
 
 	if err := pg.db.Create(&newProfile).Error; err != nil {
@@ -86,19 +94,6 @@ func (pg *profileGorm) Create(p *types.ProfileRequest) error {
 			tx.Rollback()
 			return fmt.Errorf("error creating new experience: %v", err)
 		}
-	}
-
-	social := Social{
-		Youtube:   p.Social.Youtube,
-		Twitter:   p.Social.Twitter,
-		Facebook:  p.Social.Facebook,
-		Linkedin:  p.Social.Linkedin,
-		Instagram: p.Social.Instagram,
-		ProfileID: newProfile.ID,
-	}
-	if err := pg.db.Create(&social).Error; err != nil {
-		tx.Rollback()
-		return fmt.Errorf("error creating new social: %v", err)
 	}
 
 	return nil

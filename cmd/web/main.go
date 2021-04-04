@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/router"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres"
 	"log"
 	"net/http"
+
+	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/router"
+	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres"
 
 	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/config"
 )
@@ -25,6 +26,7 @@ func main() {
 		postgres.WithUser(),
 		postgres.WithProfile(),
 	)
+
 	if err != nil {
 		panic(err)
 	}

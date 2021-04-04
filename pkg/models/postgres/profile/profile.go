@@ -1,13 +1,14 @@
 package profile
 
 import (
+	"time"
+
 	"github.com/lib/pq"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/utils"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Experience struct {
@@ -23,13 +24,11 @@ type Experience struct {
 }
 
 type Social struct {
-	utils.GormModel
 	Youtube   string `json:"youtube"`
 	Twitter   string `json:"twitter"`
 	Facebook  string `json:"facebook"`
 	Linkedin  string `json:"linkedin"`
 	Instagram string `json:"instagram"`
-	ProfileID uint
 }
 
 type Profile struct {
@@ -43,6 +42,7 @@ type Profile struct {
 	Githubusername string         `json:"githubusername"`
 	UserID         int
 	User           user.User
+	Social
 }
 
 type ProfileDB interface {

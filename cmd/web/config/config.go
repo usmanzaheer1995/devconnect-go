@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/utils"
 	"gopkg.in/yaml.v2"
-	"os"
 )
 
 // Config contains the system wide configuration

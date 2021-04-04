@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"fmt"
+
+	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/education"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/profile"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
 	"gorm.io/driver/postgres"
@@ -64,8 +66,7 @@ func (s *Services) DestructiveReset() error {
 			&user.User{},
 			&profile.Profile{},
 			&profile.Experience{},
-			&profile.Education{},
-			&profile.Social{},
+			&education.Education{},
 		)
 	if err != nil {
 		return err
@@ -80,8 +81,7 @@ func (s *Services) AutoMigrate() error {
 	return s.db.AutoMigrate(
 		&user.User{},
 		&profile.Profile{},
-		&profile.Education{},
-		&profile.Social{},
+		&education.Education{},
 		&profile.Experience{},
 	)
 }

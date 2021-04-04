@@ -1,5 +1,6 @@
 port: 5000
 env: "dev"
+secret: "super-secret-dev"
 database:
   host:     "localhost"
   port:     5431

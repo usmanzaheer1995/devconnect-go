@@ -4,7 +4,7 @@ services:
     image: postgres:12
     environment:
       POSTGRES_HOST: "user"
-      POSTGRES_PASSWORD: "embrace123"
+      POSTGRES_PASSWORD: "usman123"
       POSTGRES_DB: "devconnect-dev"
     ports:
       - "5431:5432"
@@ -20,7 +20,7 @@ services:
       - "5430:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: user@domain.local
-      PGADMIN_DEFAULT_PASSWORD: "embrace123"
+      PGADMIN_DEFAULT_PASSWORD: "usman123"
     depends_on:
       - postgres
     networks:
