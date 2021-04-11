@@ -1,14 +1,22 @@
-package models
+package errors
+
+type formErrors map[string][]string
 
 type ClientError interface {
 	Error() string
 	ResponseStatus() int
+	ResponseData() formErrors
 }
 
 type HttpError struct {
-	Cause  error  `json:"-"`
-	Detail string `json:"message"`
-	Status int    `json:"-"`
+	Cause  error               `json:"-"`
+	Detail string              `json:"message"`
+	Status int                 `json:"-"`
+	Data   formErrors `json:"data"`
+}
+
+func (e *HttpError) ResponseData() formErrors {
+	return e.Data
 }
 
 func (e *HttpError) Error() string {
@@ -24,7 +32,7 @@ func (e *HttpError) Error() string {
 	return e.Detail + ": " + e.Cause.Error()
 }
 
-func(e *HttpError) ResponseStatus() int {
+func (e *HttpError) ResponseStatus() int {
 	return e.Status
 }
 
@@ -33,5 +41,13 @@ func NewHttpError(err error, status int, detail string) error {
 		Cause:  err,
 		Detail: detail,
 		Status: status,
+	}
+}
+
+func NewHttpError2(status int, detail string, data map[string][]string) error {
+	return &HttpError{
+		Detail: detail,
+		Status: status,
+		Data: data,
 	}
 }

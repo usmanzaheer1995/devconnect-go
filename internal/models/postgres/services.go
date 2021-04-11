@@ -3,9 +3,9 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/education"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/profile"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/education"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/profile"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/user"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

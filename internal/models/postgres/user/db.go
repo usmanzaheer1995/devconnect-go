@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models"
 	"gorm.io/gorm"
 )
 

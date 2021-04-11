@@ -45,7 +45,7 @@ func AuthJwtVerify(next http.Handler) http.Handler {
 		} else if r.Header.Get("x-auth-token") != "" {
 			header = r.Header.Get("x-auth-token")
 		} else {
-			utils.ERROR(w, http.StatusForbidden, errors.New("invalid token"))
+			utils.ERROR(w, http.StatusForbidden, errors.New("invalid token"), nil)
 			return
 		}
 		header = strings.TrimSpace(header)
@@ -54,7 +54,7 @@ func AuthJwtVerify(next http.Handler) http.Handler {
 			return []byte(os.Getenv("SECRET")), nil
 		})
 		if err != nil {
-			utils.ERROR(w, http.StatusForbidden, errors.New("invalid token"))
+			utils.ERROR(w, http.StatusForbidden, errors.New("invalid token"), nil)
 			return
 		}
 		claims, _ := token.Claims.(jwt.MapClaims)

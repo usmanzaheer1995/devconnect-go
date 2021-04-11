@@ -1,7 +1,7 @@
 package education
 
 import (
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/types"
 	"gorm.io/gorm"
 )
 

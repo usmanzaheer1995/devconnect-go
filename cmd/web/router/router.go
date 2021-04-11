@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres"
+	errors2 "github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/utils"
 	"log"
 	"net/http"
@@ -22,18 +22,18 @@ func errorHandler(fn rootHandler) http.HandlerFunc {
 		// This is where our error handling logic starts.
 		log.Printf("[ERROR OCCURRED]: %v", err) // Log the error.
 
-		clientError, ok := err.(models.ClientError) // Check if it is a ClientError.
+		clientError, ok := err.(errors2.ClientError) // Check if it is a ClientError.
 		if !ok {
 			// If the error is not ClientError, assume that it is ServerError.
 			// return 500 Internal Server Error.
 			log.Printf("An internal error accured: %v", err)
-			utils.ERROR(w, http.StatusInternalServerError, errors.New("internal server error"))
+			utils.ERROR(w, http.StatusInternalServerError, errors.New("internal server error"), nil)
 			return
 		}
 		log.Printf("[ERROR OCCURRED]: %v", err)
 
 		status := clientError.ResponseStatus() // Get http status code and headers.
-		utils.ERROR(w, status, clientError)
+		utils.ERROR(w, status, clientError, clientError.ResponseData())
 		return
 	}
 }

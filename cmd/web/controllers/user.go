@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
-	userModel "github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
+	errors2 "github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models"
+	userModel "github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/user"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -25,7 +26,7 @@ func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) error 
 	uid := uint(r.Context().Value("userID").(float64))
 	user, err := u.us.ByID(uid)
 	if err != nil {
-		return models.NewHttpError(err, http.StatusInternalServerError, "user not found")
+		return errors2.NewHttpError(err, http.StatusInternalServerError, "user not found")
 	}
 	user.PasswordHash = ""
 	utils.JSON(w, http.StatusOK, &utils.Response{
@@ -78,13 +79,12 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) error {
 	user := &userModel.User{}
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		//utils.ERROR(w, http.StatusBadRequest, err)
-		return errors.New("Error not null")
+		return errors.New("error not null")
 	}
 
 	err = u.us.Create(user)
 	if err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, err.Error())
+		return err
 	}
 
 	token, err := utils.EncodeAuthToken(user.ID)
@@ -106,14 +106,13 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) error {
 func (u *UserController) Login(w http.ResponseWriter, r *http.Request) error {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		utils.ERROR(w, http.StatusBadRequest, err)
 		return err
 	}
 
 	user := &userModel.User{}
 	err = json.Unmarshal(body, &user)
 	if err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "bad request")
+		return errors2.NewHttpError(err, http.StatusBadRequest, "bad request")
 	}
 
 	user, err = u.us.Login(user.Email, user.Password)

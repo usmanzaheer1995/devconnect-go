@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/user"
 	"gorm.io/gorm"
 )
 

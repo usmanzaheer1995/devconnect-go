@@ -4,8 +4,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/controllers"
 	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/middlewares"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/profile"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/profile"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/user"
 	"net/http"
 )
 

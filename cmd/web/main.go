@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/router"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres"
 
-	"github.com/usmanzaheer1995/devconnect-go-v2/cmd/web/config"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/config"
 )
 
 func main() {

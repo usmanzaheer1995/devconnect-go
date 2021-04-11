@@ -27,7 +27,7 @@ func DefaultConfig() Config {
 
 // LoadConfig is used to load all the app wide configuration
 func LoadConfig(configReq bool) Config {
-	f, err := os.Open("./cmd/web/config/config.yaml")
+	f, err := os.Open("./internal/config/config.yaml")
 	if err != nil {
 		if configReq {
 			panic(err)

@@ -3,10 +3,11 @@ package profile
 import (
 	"errors"
 	"fmt"
+	errors2 "github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
 	"net/http"
 
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/types"
 	"gorm.io/gorm"
 )
 
@@ -44,7 +45,7 @@ func (pg *profileGorm) Create(p *types.ProfileRequest) error {
 		return fmt.Errorf("error updating profile: %v", err)
 	}
 	if existingProfile != nil {
-		return models.NewHttpError(nil, http.StatusConflict, "profile already exists")
+		return errors2.NewHttpError(nil, http.StatusConflict, "profile already exists")
 	}
 	tx := pg.db.Begin()
 	defer func() {
@@ -103,7 +104,7 @@ func (pg *profileGorm) Update(p *types.ProfileRequest) error {
 	profile, err := pg.FindByUser(uint(p.UserID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return models.NewHttpError(nil, http.StatusNotFound, "profile not found")
+			return errors2.NewHttpError(nil, http.StatusNotFound, "profile not found")
 		}
 		return fmt.Errorf("error updating profile: %v", err)
 	}

@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/lib/pq"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models/postgres/user"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models/postgres/user"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/types"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/utils"
 	"gorm.io/gorm"
 )

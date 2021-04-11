@@ -24,10 +24,11 @@ func JSON(w http.ResponseWriter, statusCode int, data *Response) {
 	}
 }
 
-func ERROR(w http.ResponseWriter, statusCode int, err error) {
+func ERROR(w http.ResponseWriter, statusCode int, err error, data interface{}) {
 	if err != nil {
 		JSON(w, statusCode, &Response{
 			Message: err.Error(),
+			Data: data,
 		})
 		return
 	}

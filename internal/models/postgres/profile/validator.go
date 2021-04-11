@@ -2,8 +2,8 @@ package profile
 
 import (
 	"errors"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
+	errors2 "github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/types"
 	"net/http"
 	"strings"
 	"time"
@@ -77,7 +77,7 @@ func (pv *profileValidator) Create(p *types.ProfileRequest) error {
 		pv.skillsFormat,
 		pv.experienceTimeFormat,
 	); err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "")
+		return errors2.NewHttpError(err, http.StatusBadRequest, "")
 	}
 	return pv.ProfileDB.Create(p)
 }
@@ -88,7 +88,7 @@ func(pv *profileValidator) Update(p *types.ProfileRequest) error {
 		pv.skillsFormat,
 		pv.experienceTimeFormat,
 	); err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "")
+		return errors2.NewHttpError(err, http.StatusBadRequest, "")
 	}
 	return pv.ProfileDB.Update(p)
 }

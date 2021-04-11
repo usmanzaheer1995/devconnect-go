@@ -9,7 +9,8 @@ services:
     ports:
       - "5431:5432"
     volumes:
-      - ${HOME}/user-data:/var/lib/postgresql/data
+      - D:/goworkspace/user-data:/var/lib/postgresql/data
+      # - ${HOME}/user-data:/var/lib/postgresql/data
     networks:
       - devconnect-go-v2
 

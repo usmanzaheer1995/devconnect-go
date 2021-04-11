@@ -1,8 +1,7 @@
 package user
 
 import (
-	"errors"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
+	errors2 "github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
 	"net/http"
 	"regexp"
 	"strings"
@@ -14,6 +13,7 @@ import (
 )
 
 type userValidator struct {
+	Errors map[string][]string
 	UserDB
 }
 
@@ -22,6 +22,7 @@ var _ UserDB = &userValidator{}
 func newUserValidator(udb UserDB) *userValidator {
 	return &userValidator{
 		UserDB: udb,
+		Errors: make(map[string][]string),
 	}
 }
 
@@ -61,7 +62,8 @@ func (uv *userValidator) setAvatar(u *User) error {
 
 func (uv *userValidator) requireEmail(user *User) error {
 	if user.Email == "" {
-		return errors.New("email is required")
+		uv.Errors["email"] = append(uv.Errors["email"], "email is required")
+		//return errors.New("email is required")
 	}
 	return nil
 }
@@ -75,7 +77,8 @@ func (uv *userValidator) emailExists(user *User) error {
 		return err
 	}
 	if user.ID != existing.ID {
-		return errors.New("email already taken")
+		uv.Errors["email"] = append(uv.Errors["email"], "email already taken")
+		//return errors.New("email already taken")
 	}
 	return nil
 }
@@ -90,14 +93,16 @@ func (uv *userValidator) normalizeEmail(user *User) error {
 func (uv *userValidator) emailFormat(user *User) error {
 	emailRegex := regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,16}$`)
 	if !emailRegex.MatchString(user.Email) {
-		return errors.New("invalid email")
+		uv.Errors["email"] = append(uv.Errors["email"], "invalid email")
+		//return errors.New("invalid email")
 	}
 	return nil
 }
 
 func (uv *userValidator) passwordRequired(user *User) error {
 	if user.Password == "" {
-		return errors.New("password is required")
+		uv.Errors["password"] = append(uv.Errors["password"], "password is required")
+		//return errors.New("password is required")
 	}
 	return nil
 }
@@ -107,7 +112,8 @@ func (uv *userValidator) passwordMinLength(user *User) error {
 		return nil
 	}
 	if len(user.Password) < 6 {
-		return errors.New("password too short")
+		uv.Errors["password"] = append(uv.Errors["password"], "password too short")
+		//return errors.New("password too short")
 	}
 	return nil
 }
@@ -119,7 +125,9 @@ func (uv *userValidator) bcryptPassword(user *User) error {
 	passwordBytes := []byte(user.Password)
 	hashedBytes, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		uv.Errors["password"] = append(uv.Errors["password"], err.Error())
+		//return err
+		return nil
 	}
 	user.PasswordHash = string(hashedBytes)
 	user.Password = ""
@@ -145,7 +153,10 @@ func (uv *userValidator) ByEmail(email string) (*User, error) {
 		uv.requireEmail,
 		uv.emailFormat,
 	); err != nil {
-		return nil, models.NewHttpError(err, http.StatusBadRequest, "bad request")
+		return nil, errors2.NewHttpError(err, http.StatusBadRequest, "bad request")
+	}
+	if len(uv.Errors) > 0 {
+		return nil, errors2.NewHttpError2(http.StatusBadRequest, "bad request", uv.Errors)
 	}
 	return uv.UserDB.ByEmail(u.Email)
 }
@@ -161,10 +172,13 @@ func (uv *userValidator) Create(u *User) error {
 		uv.passwordMinLength,
 		uv.setAvatar,
 	); err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "")
+		return errors2.NewHttpError(err, http.StatusBadRequest, "")
+	}
+	if len(uv.Errors) > 0 {
+		return errors2.NewHttpError2(http.StatusBadRequest, "bad request", uv.Errors)
 	}
 	if err := uv.bcryptPassword(u); err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "bad request")
+		return errors2.NewHttpError(err, http.StatusBadRequest, "bad request")
 	}
 	return uv.UserDB.Create(u)
 }

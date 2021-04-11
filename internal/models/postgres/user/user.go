@@ -2,7 +2,8 @@ package user
 
 import (
 	"fmt"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/models"
 	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -48,14 +49,14 @@ func NewUserService(db *gorm.DB) UserService {
 func (us *userService) Login(email, password string) (*User, error) {
 	user, err := us.ByEmail(email)
 	if err != nil {
-		return nil, models.NewHttpError(err, http.StatusBadRequest, "incorrect username/password")
+		return nil, errors.NewHttpError(err, http.StatusBadRequest, "incorrect username/password")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
 	if err != nil {
 		switch err {
 		case bcrypt.ErrMismatchedHashAndPassword:
-			return nil, models.NewHttpError(nil, http.StatusBadRequest, "incorrect username/password")
+			return nil, errors.NewHttpError(nil, http.StatusBadRequest, "incorrect username/password")
 		default:
 			return nil, fmt.Errorf("error comparing hash: %v", err)
 		}

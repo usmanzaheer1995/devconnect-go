@@ -1,8 +1,8 @@
 package education
 
 import (
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/models"
-	"github.com/usmanzaheer1995/devconnect-go-v2/pkg/types"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/errors"
+	"github.com/usmanzaheer1995/devconnect-go-v2/internal/types"
 	"net/http"
 	"time"
 )
@@ -31,13 +31,13 @@ func NewEduValidator(edb EducationDB) *educationValidator {
 func (eduv *educationValidator) educationTimeFormat(edu *types.EducationRequest) error {
 	cf, err := time.Parse("2006-01-02", edu.From)
 	if err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "error parsing date")
+		return errors.NewHttpError(err, http.StatusBadRequest, "error parsing date")
 	}
 	edu.ConvertedFrom = cf
 
 	ct, err := time.Parse("2006-01-02", edu.To)
 	if err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "")
+		return errors.NewHttpError(err, http.StatusBadRequest, "")
 	}
 	edu.ConvertedTo = ct
 	return nil
@@ -45,7 +45,7 @@ func (eduv *educationValidator) educationTimeFormat(edu *types.EducationRequest)
 
 func (eduv *educationValidator) schoolRequired(edu *types.EducationRequest) error {
 	if edu.School == "" {
-		return &models.HttpError{
+		return &errors.HttpError{
 			Cause:  nil,
 			Detail: "school is required",
 			Status: http.StatusBadRequest,
@@ -56,7 +56,7 @@ func (eduv *educationValidator) schoolRequired(edu *types.EducationRequest) erro
 
 func (eduv *educationValidator) degreeRequired(edu *types.EducationRequest) error {
 	if edu.Degree == "" {
-		return &models.HttpError{
+		return &errors.HttpError{
 			Cause:  nil,
 			Detail: "degree is required",
 			Status: http.StatusBadRequest,
@@ -67,7 +67,7 @@ func (eduv *educationValidator) degreeRequired(edu *types.EducationRequest) erro
 
 func (eduv *educationValidator) fieldofstudyRequired(edu *types.EducationRequest) error {
 	if edu.Fieldofstudy == "" {
-		return &models.HttpError{
+		return &errors.HttpError{
 			Cause:  nil,
 			Detail: "field of study is required",
 			Status: http.StatusBadRequest,
@@ -78,7 +78,7 @@ func (eduv *educationValidator) fieldofstudyRequired(edu *types.EducationRequest
 
 func (eduv *educationValidator) fromRequired(edu *types.EducationRequest) error {
 	if edu.From == "" {
-		return &models.HttpError{
+		return &errors.HttpError{
 			Cause:  nil,
 			Detail: "from date is required",
 			Status: http.StatusBadRequest,
@@ -96,7 +96,7 @@ func (pv *educationValidator) Create(edu *types.EducationRequest) error {
 		pv.fromRequired,
 		pv.educationTimeFormat,
 	); err != nil {
-		return models.NewHttpError(err, http.StatusBadRequest, "")
+		return errors.NewHttpError(err, http.StatusBadRequest, "")
 	}
 	return pv.EducationDB.Create(edu)
 }
